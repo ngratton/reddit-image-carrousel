@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Reddit : TOP EN CE MOMENT | ngratton (0270256) | TP2</title>
+    <link rel="stylesheet" href="css/styles.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js" defer></script>
+    <script src="js/app.js" type="module" defer></script>
+</head>
+<body>
+    <header>
+        <h1>Reddit : TOP EN CE MOMENT</h1>
+    </header>
+
+    <div id="app" role="main">
+        <div id="imageondisplay" role="figure">
+            <img :src="activePost.url" id="image-principale" />
+            <div class="img-caption"  v-if="activePost" role="text">
+                <p v-if="activePost.subreddit" class="caption-sub">
+                    r/{{ activePost.subreddit }}
+                </p>
+                <p class="caption-title">
+                    {{ activePost.title }}
+                </p>
+                <p class="caption-meta" v-if="activePost.author">
+                    Publié par {{ activePost.author }}  |  <a :href="activePost.permalink">Voir la publication sur Reddit</a>
+                </p>
+            </div>
+        </div>
+        
+        <div id="carrousel" role="menu">
+            <carrousel
+                ref="index"
+                v-for="(post, index) in postsList"
+                :key="post.id"
+                :post="post"
+                :id="post.id"
+                :title="post.title"
+                :url="post.url"
+                :thumbnail="post.thumbnail"
+                :permalink="post.permalink"
+                :author="post.author"
+                v-on:imageselectionnee="selectPost(post, index)"
+            ></carrousel>
+        </div>
+
+        <footer>
+            <p>Photos en provenance de :
+                <span v-for="sub in subreddits" role="text">r/{{ sub }}</span>
+            </p>
+        </footer>
+    </div>
+
+</body>
+</html>
