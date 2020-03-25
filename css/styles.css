@@ -9,9 +9,8 @@
 
 html,
 body {
-  width: 100%;
-  height: 100%;
-  max-height: 100vh;
+  width: 100vw;
+  height: 100vh;
   margin: 0;
   padding: 0;
   font-family: 'Source Sans Pro', Arial, Helvetica, sans-serif;
@@ -19,7 +18,7 @@ body {
   color: #FF5700;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  justify-content: space-between;
 }
 
 h1 {
@@ -54,6 +53,7 @@ header {
 
 #app {
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -61,12 +61,11 @@ header {
 
 #app #imageondisplay {
   background-color: #111;
-  height: 700px;
+  flex-grow: 1;
   margin: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-grow: 1;
   position: relative;
 }
 
@@ -75,7 +74,7 @@ header {
 }
 
 #app #imageondisplay img {
-  max-height: 100%;
+  max-height: 700px;
   max-width: 100%;
   margin: 0 auto;
   padding: 20px;
@@ -115,23 +114,64 @@ header {
 #app #carrousel {
   background-color: #333;
   width: 100%;
-  height: 150px;
-  flex-grow: 0;
+  height: 140px;
+  overflow: hidden;
+  position: relative;
+}
+
+#app #carrousel .scroll-container {
   display: flex;
   align-items: center;
-  overflow-x: hidden;
+  width: 100%;
+  transition: left 0.05s cubic-bezier(0.01, 1.26, 0.95, 0.83);
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#app #carrousel #scroll-gauche,
+#app #carrousel #scroll-droite {
+  position: absolute;
+  height: 50px;
+  width: 50px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: white;
+  color: #FF5700;
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2em;
+  border-radius: 50%;
+  opacity: 0.75;
+  transition: opacity .1s ease;
+}
+
+#app #carrousel #scroll-gauche:hover,
+#app #carrousel #scroll-droite:hover {
+  opacity: 1;
+}
+
+#app #carrousel #scroll-left {
+  left: 100px;
+}
+
+#app #carrousel #scroll.right {
+  right: 20px;
 }
 
 #app #carrousel .miniature {
   height: 120px;
-  width: 130px;
+  width: 120px;
   margin: 5px;
   padding: 5px;
   transition: background-color .1s ease-out;
   cursor: pointer;
   display: flex;
   align-items: center;
-  border: 1px solid 255, 255, 255, 0.1;
+  background-color: #444;
+  border-radius: 3px;
 }
 
 #app #carrousel .miniature:hover {
@@ -140,8 +180,8 @@ header {
 
 #app #carrousel .miniature img {
   max-height: 110px;
-  max-width: 120px;
-  border: 1px solid transparent;
+  width: 100px;
+  border: 1px solid black;
 }
 
 #app #carrousel .miniature .actif {

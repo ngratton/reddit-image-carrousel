@@ -1,18 +1,26 @@
+/**
+ * ##########################
+ * Nicholas Gratton (0270256)
+ * ##########################
+ * 
+ * Bug connu: Certaines images hébergées sur IMGUR ne s'affiche pas dans le
+ * navigateur par ils ne permettent pas d'être loadé depuis "localhost" ou "127.0.0.1"
+ * 
+ * Source en ligne :
+ */
+
 import carrousel from './components/carrousel.js'
 import { http_get } from './utils/request.js'
 
 let app = new Vue({
     el: '#app',
     data: {
-        subreddits: ['UnixPorn'],
-        // subreddits: ['UnixPorn', 'AlbumArtPorn', 'BikePorn', 'EarthPorn'],
+        // subreddits: ['itsaunixsystem'],
+        subreddits: ['UnixPorn', 'AlbumArtPorn', 'BikePorn', 'EarthPorn'],
         postsList: [],
         activePost: {
-            url: '',
-            title: '',
-            author: '',
-            subreddit: '',
-            permalink: '',
+            url: String,
+            index: Number,
         },
         activePostIndex: '',
     },
@@ -21,82 +29,75 @@ let app = new Vue({
     },
     mounted() {
         this.activePost.url = './img/loading.gif'
-        this.getPosts().then(() => {
-            // this.postsList = Array.from(this.postsList)
-            console.log(typeof Array.from(this.postsList));
-            
-            this.navigatePostsWithArrows()
-            this.randomPost()
+        this.subreddits.forEach(sub => {
+            this.getPosts(sub).then(() => {
+                let randNumber = Math.floor(Math.random() * this.postsList.length)
+                this.randomPost(randNumber)
+            })
         })
-    },
+        this.navigatePostsWithArrows()
+    }, // mounted
     methods: {
-        getPosts() {
-            const nonThumb = ['nsfw', 'self', 'default']
+        getPosts(sub) {
+            const NONTHUMB = ['nsfw', 'self', 'default']
             return new Promise((resolve, reject) => {
                 resolve(
-                    this.subreddits.forEach(sub => {
-                        this.fetchSubPosts(sub, []).then(data => {
-                            this.postsList.push(data)
-                            
-                            // data.forEach(post => {
-                            //     if(!nonThumb.includes(post.data.thumbnail)) {
-                            //         let postValide = new Object()
-                            //         postValide.url = post.data.url
-                            //         postValide.title = post.data.title
-                            //         postValide.thumbnail = post.data.thumbnail
-                            //         postValide.author = post.data.author
-                            //         postValide.subreddit = post.data.subreddit
-                            //         postValide.permalink = post.data.permalink
-                            //         postValide.id = post.data.id
-                            //         return this.postsList.push(postValide)
-                            //     }
-                            // })
-                            // this.postsList = this.postsList.sort(function() { return 0.5 - Math.random() })
+                    this.fetchSubPosts(sub, []).then(data => {
+                        data.forEach(post => {
+                            post = post.data
+                            if(!NONTHUMB.includes(post.thumbnail)) {
+                                return this.postsList.push(post)
+                            }
                         })
+                        this.postsList = this.postsList.sort(function() { return 0.5 - Math.random() })
                     })
-                )
+                ) // resolve
             })
-        },
+        },  // getPosts
         fetchSubPosts(sub, resultats) {
             return http_get(`https://www.reddit.com/r/${sub}/hot.json?limit=30`).then(donnees => {
-                let posts = donnees.data.children
-                return resultats = resultats.concat(posts)
+                return resultats = resultats.concat(donnees.data.children)
             })
-        },
-        selectPost(post, index) {
-            this.chargementImage(post)
-            this.activePostIndex = index
-            this.activePost.url = post.url
-            this.activePost.title = post.title
-            this.activePost.author = post.author
-            this.activePost.subreddit = post.subreddit
-            this.activePost.permalink = `https://www.reddit.com${post.permalink}`
-        },
-        chargementImage(post) {
-            let image = document.querySelector('#image-principale')
-            const loadgif = './img/loading.gif'
-            this.postImageUrl = loadgif
-            // this.postImageUrl = post.url
-        },
-        randomPost() {
-            this.activePost = {
-                url: 'https://i.redd.it/jff6yatbrym41.jpg',
-                title: 'Lorem Ipsum',
-                author: 'De Vinci',
-                subreddit: 'r/SuperDuper',
-                permalink: '/r/pics'
-            }
-        },
+        }, // fetchSubPosts
+        randomPost(postNo) {
+            this.activePost = this.postsList[postNo]
+            this.activePostIndex = postNo
+            this.scrollToActive(postNo)
+        },  // randomPost
         navigatePostsWithArrows() {
             window.addEventListener('keyup', e => {
                 if(e.key === 'ArrowLeft') {
-                    console.log(e.key)
+                    let position = this.activePostIndex
+                    if (position > 0) {
+                        position = position - 1
+                        this.selectionPost(position)
+                        this.activePostIndex = position
+                    }
                 }
                 if(e.key === 'ArrowRight') {
-                    console.log(e.key)
+                    let max = this.postsList.length - 1
+                    let position = this.activePostIndex
+                    if(position < max) {
+                        position = position + 1
+                        this.selectionPost(position)
+                        this.activePostIndex = position
+                    }
                 }
             })
+        },  // navigatePostsWithArrows
+        selectionPost(index) {
+            this.activePost = this.postsList[index]
+            this.activePost.index = index
+            this.activePostIndex = index
+            this.scrollToActive(index)
         },
+        scrollToActive(index) {
+            let carrousel = document.querySelector('.scroll-container')
+            let halfScreenWidth = carrousel.clientWidth / 2
+            let miniatureWidth = 120 
+            let largeurAScroller = (miniatureWidth * index)
+            carrousel.style.left = `${0 - largeurAScroller + halfScreenWidth}px`
+        }
     }, 
 })
 
