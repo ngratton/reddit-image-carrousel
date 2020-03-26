@@ -93,7 +93,7 @@ let app = new Vue({
         },
         scrollToActive(index) {
             let carrousel = document.querySelector('.scroll-container')
-            let halfScreenWidth = carrousel.clientWidth / 2
+            let halfScreenWidth = carrousel.clientWidth / 2 - 60
             let miniatureWidth = 120 
             let largeurAScroller = (miniatureWidth * index)
             carrousel.style.left = `${0 - largeurAScroller + halfScreenWidth}px`

@@ -40,7 +40,6 @@ export default tpl({
             // Si miniature inactive, changer son status et transmettre index au parent
             if (!this.estActif) {
                 this.$emit('imageselectionnee', this.index)
-                this.estActif = !this.estActif
             }
             // Informer les autres miniatures d'un changement
             this.$root.$emit('toggleActif', index)
@@ -48,6 +47,11 @@ export default tpl({
     },
     watch: {
         postActifIndex() {
+            if(this.postActifIndex == this.index) {
+                this.estActif = !this.estActif
+            } else if (this.estActif) {
+                this.estActif = !this.estActif
+            }
         }
     },
 })
