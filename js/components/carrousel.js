@@ -2,7 +2,6 @@ import tpl from '../utils/avecTemplateHtml.js'
 
 export default tpl({
     template: 'components/carrousel.html',
-    // props: ['post', 'id'],
     props: [
         'id',
         'title',
@@ -10,6 +9,7 @@ export default tpl({
         'thumbnail',
         'permalink',
         'author',
+        'index'
     ],
     data() {
         return {
@@ -17,27 +17,37 @@ export default tpl({
         }
     },
     mounted() {
-        this.id = this.$props.id
-        
+        if(this.$parent.activePostIndex == this.index) {
+            this.estActif = !this.estActif;
+        }
     },
     updated() {
         // Lors de l'appel de selectionImage(), recevoir changement d'état
-        this.$root.$on('toggleActif', (id) => {
+        this.$root.$on('toggleActif', (index) => {
             // Si miniature n'est pas celle cliquée ET si miniature actif, la désactiver
-            if (this.id != id && this.estActif) {
+            if (this.index != index && this.estActif) {
                 this.estActif = !this.estActif
             }
         })  
     },
+    computed: {
+        postActifIndex() {
+            return this.$parent.activePostIndex
+        }
+    },
     methods: {
-        selectionImage(id, index) {
-            // Si miniature inactive, changer son status et transmettre Obj.post au parent
+        selectionImage(index) {
+            // Si miniature inactive, changer son status et transmettre index au parent
             if (!this.estActif) {
-                this.$emit('imageselectionnee', this.post)
+                this.$emit('imageselectionnee', this.index)
                 this.estActif = !this.estActif
             }
             // Informer les autres miniatures d'un changement
-            this.$root.$emit('toggleActif', id )
+            this.$root.$emit('toggleActif', index)
         },
-    }
+    },
+    watch: {
+        postActifIndex() {
+        }
+    },
 })
