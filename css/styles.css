@@ -117,11 +117,11 @@ header {
 }
 
 #main #carrousel {
+  position: relative;
   background-color: #333;
   width: 100%;
   height: 140px;
   overflow: hidden;
-  position: relative;
 }
 
 #main #carrousel .scroll-container {
@@ -137,33 +137,51 @@ header {
 #main #carrousel #scroll-gauche,
 #main #carrousel #scroll-droite {
   position: absolute;
-  height: 50px;
+  height: 100%;
   width: 50px;
   top: 50%;
+  border: 0;
   transform: translateY(-50%);
-  background-color: white;
   color: #FF5700;
   z-index: 99;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2em;
-  border-radius: 50%;
-  opacity: 0.75;
+  opacity: 1;
+  transition: opacity .1s ease, background .1s ease;
+}
+
+#main #carrousel #scroll-gauche {
+  left: 0;
+  background: linear-gradient(90deg, #333333, rgba(51, 51, 51, 0));
+}
+
+#main #carrousel #scroll-gauche span {
+  opacity: 0;
+}
+
+#main #carrousel #scroll-droite {
+  right: 0;
+  background: linear-gradient(-90deg, #333333, rgba(51, 51, 51, 0));
+}
+
+#main #carrousel #scroll-droite span {
+  opacity: 0;
+}
+
+#main #carrousel:hover {
   transition: opacity .1s ease;
 }
 
-#main #carrousel #scroll-gauche:hover,
-#main #carrousel #scroll-droite:hover {
+#main #carrousel:hover #scroll-gauche,
+#main #carrousel:hover #scroll-droite {
+  background: white;
+}
+
+#main #carrousel:hover #scroll-gauche span,
+#main #carrousel:hover #scroll-droite span {
   opacity: 1;
-}
-
-#main #carrousel #scroll-left {
-  left: 100px;
-}
-
-#main #carrousel #scroll.right {
-  right: 20px;
 }
 
 #main #carrousel .miniature {

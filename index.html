@@ -35,11 +35,11 @@
             </div>
             
             <div id="carrousel" role="menu">
-                <!-- <div id="scroll-gauche">
+                <button id="scroll-gauche" @click="naviguerGauche(activePostIndex)">
                     <span>
                         <
                     </span>
-                </div> -->
+                </button>
                 <div class="scroll-container" style="left: 0px;">
                     <carrousel
                         v-for="(post, index) in postsList"
@@ -54,11 +54,11 @@
                         v-on:imageselectionnee="selectionPost(index)"
                     ></carrousel>
                 </div>
-                <!-- <div id="scroll-droite">
+                <button id="scroll-droite" @click="naviguerDroite(activePostIndex)">
                     <span>
                         >
                     </span>
-                </div> -->
+                </button>
             </div>
         </main>
 
