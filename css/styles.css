@@ -55,6 +55,19 @@ header {
   align-items: center;
 }
 
+header #reddit-icon {
+  height: 40px;
+  margin-right: 20px;
+}
+
+header #reddit-icon .cls-1 {
+  fill: #FF5700;
+}
+
+header #reddit-icon .cls-2 {
+  fill: white;
+}
+
 #main {
   height: 100%;
   width: 100%;
@@ -221,7 +234,7 @@ footer {
   color: #888;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
 }
 
 footer span {

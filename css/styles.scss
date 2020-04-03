@@ -57,6 +57,13 @@ header {
     height: 60px;
     display: flex;
     align-items: center;
+
+    #reddit-icon {
+        height: 40px;
+        margin-right: 20px;
+        .cls-1 { fill: $reddit-orange; }
+        .cls-2 { fill: white; }
+    }
 }
 
 #main {
@@ -229,7 +236,7 @@ footer {
     color: #888;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
 
     span {
         padding: 5px;

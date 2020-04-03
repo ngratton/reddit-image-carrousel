@@ -11,70 +11,91 @@
  */
 
 import carrousel from './components/carrousel.js'
-import { http_get } from './utils/request.js'
 
 let app = new Vue({
     el: '#app',
     data: {
-        // subreddits: ['itsaunixsystem'],
+        activeImg: '',
         subreddits: ['UnixPorn', 'AlbumArtPorn', 'BikePorn', 'EarthPorn'],
         postsList: [],
-        activePost: {},
-        activeImage: './img/loading.gif',
+        activePost: {
+            url: './img/loading.gif'
+        },
         activePostIndex: '',
+        subsToFetch: []
     },
     components: {
         carrousel,
     },
     created() {
-        this.activeImage = './img/loading.gif'
-        this.loopSubsList(this.subreddits).then(() => {
-            setTimeout(()=> {
-                let randNumber = Math.floor(Math.random() * this.postsList.length)
-                this.randomPost(randNumber)
-            }, 1000)
-            this.navigatePostsWithArrows()
-        })
+        this.getPosts().then(this.randomPost)
+        this.navigatePostsWithArrows()
     }, // created
     mounted() {
     }, // mounted
     methods: {
-        loopSubsList(subs) {
-            return new Promise((resolve, reject) => {
-                subs.forEach(sub => {
-                    this.getPosts(sub)
+        getPosts() {
+            return new Promise((resolve) => {
+                Promise.all(this.fetchFromSubsList()).then(values => {
+                    for(let i = 0; i < values.length; i++) {
+                        values[i].json().then(data => {
+                            this.pushPostsToPostsList(data)
+                        })
+
+                        if(i === values.length - 1) {
+                            return resolve('Succès!')
+                        }
+                    }
                 })
-                resolve()
-                reject( Error('Sa marche pô.') )
             })
         },
-        getPosts(sub) {
+        fetchFromSubsList() {
+            let fetchList = []
+            for(let i = 0; i < this.subreddits.length; i++) {
+                fetchList[i] = fetch(`https://www.reddit.com/r/${this.subreddits[i]}.json?limit=30`)
+            }
+            return fetchList
+        },
+        pushPostsToPostsList(data) {
+            let posts = data.data.children
             const NONTHUMB = ['nsfw', 'self', 'default']
-            return this.fetchSubPosts(sub, []).then(data => {
-                // console.log(data)
-                
-                // return this.postsList.push(data)
-                data.forEach(post => {
-                    post = post.data
-                    if(!NONTHUMB.includes(post.thumbnail)) {
-                        return this.postsList.push(post)
-                    }
+            posts.forEach(post => {
+                post = post.data
+                if(!NONTHUMB.includes(post.thumbnail)) {
                     this.postsList = this.postsList.sort(function() { return 0.5 - Math.random() })
-                })
-
+                    return this.postsList.push(post)
+                }
             })
-        },  // getPosts
-        fetchSubPosts(sub, resultats) {
-            return http_get(`https://www.reddit.com/r/${sub}/hot.json?limit=30`).then(donnees => {
-                return resultats = resultats.concat(donnees.data.children)
-            })
-        }, // fetchSubPosts
-        randomPost(postNo) {
-            this.activePost = this.postsList[postNo]
-            this.activePostIndex = postNo
-            this.activeImage = this.activePost.url
-            this.scrollToActive(postNo)
+        },
+        randomPost() {
+            this.activeImg = './img/loading.gif'
+            // J'ai essayé avec des promesses; j'ai fait un refactor intense (en améliorant de ±10 lignes),
+            // mais je n'ai pas réussi à avoir le .length de mon tableau sans un court délai, d'où le setTimeout
+            setTimeout(() => { 
+                let randPost = Math.floor(Math.random() * this.postsList.length + 1)
+                this.activePost = this.postsList[randPost]
+                this.activePostIndex = randPost
+                this.activeImg = this.activePost.url
+                this.scrollToActive(randPost)
+            }, 200)
         },  // randomPost
+        selectionPost(index) {
+            this.activePost = this.postsList[index]
+            this.activeImg = './img/loading.gif'
+            this.activePost.index = index
+            this.activePostIndex = index
+            this.scrollToActive(index)
+        }, // selectionPost
+        scrollToActive(index) {
+            let carrousel = document.querySelector('.scroll-container')
+            let halfScreenWidth = carrousel.clientWidth / 2 - 60
+            let miniatureWidth = 120 
+            let largeurAScroller = (miniatureWidth * index)
+            carrousel.style.left = `${0 - largeurAScroller + halfScreenWidth}px`
+        }, // scrollToActive
+        imgLoad() {
+            this.activeImg = this.activePost.url
+        },  // imgLoad
         navigatePostsWithArrows() {
             window.addEventListener('keyup', e => {
                 if(e.key === 'ArrowLeft') {
@@ -102,23 +123,6 @@ let app = new Vue({
                 this.activePostIndex = position
             }
         }, //naviguerDroite
-        selectionPost(index) {
-            this.activePost = this.postsList[index]
-            this.activeImage = './img/loading.gif'
-            this.activePost.index = index
-            this.activePostIndex = index
-            this.scrollToActive(index)
-        }, // selectionPost
-        scrollToActive(index) {
-            let carrousel = document.querySelector('.scroll-container')
-            let halfScreenWidth = carrousel.clientWidth / 2 - 60
-            let miniatureWidth = 120 
-            let largeurAScroller = (miniatureWidth * index)
-            carrousel.style.left = `${0 - largeurAScroller + halfScreenWidth}px`
-        }, // scrollToActive
-        imgLoad() {
-            this.activeImage = this.activePost.url
-        }  // imgLoad
     }, 
 })
 
