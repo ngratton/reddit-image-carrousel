@@ -113,6 +113,10 @@ let app = new Vue({
                 position = position - 1
                 this.selectionPost(position)
                 this.activePostIndex = position
+            } else if (position === 0) {
+                let max = this.postsList.length - 1
+                this.selectionPost(max)
+                this.actinePostIndex = max
             }
         }, //naviguerGauche
         naviguerDroite(position) {
@@ -121,6 +125,9 @@ let app = new Vue({
                 position = position + 1
                 this.selectionPost(position)
                 this.activePostIndex = position
+            } else if (position === max) {
+                this.selectionPost(0)
+                this.activePostIndex = 0
             }
         }, //naviguerDroite
     }, 
