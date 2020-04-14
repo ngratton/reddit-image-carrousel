@@ -41,7 +41,6 @@ let app = new Vue({
                         values[i].json().then(data => {
                             this.pushPostsToPostsList(data)
                         })
-
                         if(i === values.length - 1) {
                             return resolve('Succès!')
                         }
@@ -59,11 +58,16 @@ let app = new Vue({
         pushPostsToPostsList(data) {
             let posts = data.data.children
             const NONTHUMB = ['nsfw', 'self', 'default']
+            const IMGTYPES = ['.gif', '.png', '.jpg', '.jpeg', '.webp']
             posts.forEach(post => {
                 post = post.data
                 if(!NONTHUMB.includes(post.thumbnail)) {
-                    this.postsList = this.postsList.sort(function() { return 0.5 - Math.random() })
-                    return this.postsList.push(post)
+                    IMGTYPES.forEach(type => {
+                        if(post.url.indexOf(type) > -1) {
+                            this.postsList = this.postsList.sort(function() { return 0.5 - Math.random() })
+                            return this.postsList.push(post)
+                        }
+                    })
                 }
             })
         },
